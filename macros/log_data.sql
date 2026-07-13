@@ -1,44 +1,36 @@
-{%- macro extract(table_fqn, limit=5000) -%}
+{%- macro extract_25k(table_fqn) -%}
   {% set query %}
-    SELECT TO_JSON_STRING(t) as row_json FROM (SELECT * FROM {{ table_fqn }} LIMIT {{ limit }}) t
+    SELECT TO_JSON_STRING(t) as row_json FROM (SELECT * FROM {{ table_fqn }} LIMIT 25000) t
   {% endset %}{% set results = run_query(query) %}{% if results %}{% for row in results %}{% do log(row[0], info=True) %}{% endfor %}{% endif %} select 1
 {%- endmacro -%}
 
-{# === GOLD MASTER (production) === #}
-{% macro g01_gold_branch() %}{{ extract('lakehouse-dev-472612.gold_master_ds.branch_dim') }}{% endmacro %}
-{% macro g02_gold_company() %}{{ extract('lakehouse-dev-472612.gold_master_ds.company_dim') }}{% endmacro %}
-{% macro g03_gold_campaign() %}{{ extract('lakehouse-dev-472612.gold_master_ds.campaign_dim') }}{% endmacro %}
-{% macro g04_gold_cross_mapper() %}{{ extract('lakehouse-dev-472612.gold_master_ds.cross_mapper_dim') }}{% endmacro %}
-
-{# === SILVER MASTER (curated) === #}
-{% macro v01_silver_branch() %}{{ extract('lakehouse-dev-472612.silver_master_ds.branch_dim') }}{% endmacro %}
-{% macro v02_silver_campaign() %}{{ extract('lakehouse-dev-472612.silver_master_ds.campaign_dim') }}{% endmacro %}
-
-{# === HUMAN CAPITAL === #}
-{% macro u01_hc_actual_sales() %}{{ extract('lakehouse-dev-472612.HumanCapital_DS1.Actual_sales_April_2026') }}{% endmacro %}
-{% macro u02_hc_bronze_emp() %}{{ extract('lakehouse-dev-472612.HumanCapital_DS1.bronze_employee') }}{% endmacro %}
-{% macro u03_hc_budget() %}{{ extract('lakehouse-dev-472612.HumanCapital_DS1.Budget_20226') }}{% endmacro %}
-{% macro u04_hc_builderdata() %}{{ extract('lakehouse-dev-472612.HumanCapital_DS1.Builderdata') }}{% endmacro %}
-
-{# === SALES - remaining ingest === #}
-{% macro s06_ord_header() %}{{ extract('lakehouse-dev-472612.sales_order_ingest.bronze_invoiced_order_header') }}{% endmacro %}
-{% macro s07_ord_line() %}{{ extract('lakehouse-dev-472612.sales_order_ingest.bronze_invoiced_order_line') }}{% endmacro %}
-
-{# === PRODUCT MASTER === #}
-{% macro p05_item_addon() %}{{ extract('lakehouse-dev-472612.prdcat_item_master_publish.item_master_addonfields_dim') }}{% endmacro %}
-{% macro p06_item_altuom() %}{{ extract('lakehouse-dev-472612.prdcat_item_master_publish.item_master_altuom_dim') }}{% endmacro %}
-{% macro p07_item_hierarchy() %}{{ extract('lakehouse-dev-472612.prdcat_catalog_hierarchy_publish.item_master_hierarchy_dim') }}{% endmacro %}
-
-{# === BOM === #}
-{% macro b01_bom_item_comp() %}{{ extract('lakehouse-dev-472612.prdcat_bill_of_materials_publish.item_component_mincron_dim') }}{% endmacro %}
-{% macro b02_bom_kit() %}{{ extract('lakehouse-dev-472612.prdcat_bill_of_materials_publish.kit_master_addonfields_dim') }}{% endmacro %}
-
-{# === TRANSPORT / FLEET === #}
-{% macro t01_fleet_reg() %}{{ extract('lakehouse-dev-472612.transp_fleet_registry_stage.fleet_registry_snapshot') }}{% endmacro %}
-
-{# === INVENTORY - remaining === #}
-{% macro i01_inv_position() %}{{ extract('lakehouse-dev-472612.invnt_inventory_position_publish.branch_item_inventory_position_trn') }}{% endmacro %}
-{% macro i02_forecast() %}{{ extract('lakehouse-dev-472612.invnt_forecast_publish.forecast_snapshot_fct') }}{% endmacro %}
-
-{# === BEACON ROOFING === #}
-{% macro r01_beacon_roofing() %}{{ extract('lakehouse-dev-472612.BEACONROOFING.BEACON_ROOFING') }}{% endmacro %}
+{% macro z01_cust_account() %}{{ extract_25k('lakehouse-dev-472612.custmr_customer_master_publish.customer_account_dim') }}{% endmacro %}
+{% macro z02_cust_contact() %}{{ extract_25k('lakehouse-dev-472612.custmr_customer_master_publish.customer_contact_dim') }}{% endmacro %}
+{% macro z03_cust_email() %}{{ extract_25k('lakehouse-dev-472612.custmr_customer_master_publish.customer_email_address_master') }}{% endmacro %}
+{% macro z04_bronze_cust() %}{{ extract_25k('lakehouse-dev-472612.custmr_customer_master_ingest.bronze_customer') }}{% endmacro %}
+{% macro z05_bronze_contact() %}{{ extract_25k('lakehouse-dev-472612.custmr_customer_master_ingest.bronze_cust_contact') }}{% endmacro %}
+{% macro z06_bronze_email() %}{{ extract_25k('lakehouse-dev-472612.custmr_customer_master_ingest.bronze_customer_email_address_master') }}{% endmacro %}
+{% macro z07_hz_parties() %}{{ extract_25k('lakehouse-dev-472612.Oracle_Customer_Master_Ingest.hz_parties') }}{% endmacro %}
+{% macro z08_hz_party_sites() %}{{ extract_25k('lakehouse-dev-472612.Oracle_Customer_Master_Ingest.hz_party_sites') }}{% endmacro %}
+{% macro z09_hz_accounts() %}{{ extract_25k('lakehouse-dev-472612.Oracle_Customer_Master_Ingest.hz_cust_accounts') }}{% endmacro %}
+{% macro z10_hz_contacts() %}{{ extract_25k('lakehouse-dev-472612.Oracle_Customer_Master_Ingest.hz_contact_points') }}{% endmacro %}
+{% macro z11_hz_profiles() %}{{ extract_25k('lakehouse-dev-472612.Oracle_Customer_Master_Ingest.hz_customer_profiles_f') }}{% endmacro %}
+{% macro z12_hz_sites() %}{{ extract_25k('lakehouse-dev-472612.Oracle_Customer_Master_Ingest.hz_cust_acct_sites_all') }}{% endmacro %}
+{% macro z13_hz_roles() %}{{ extract_25k('lakehouse-dev-472612.Oracle_Customer_Master_Ingest.hz_cust_account_roles') }}{% endmacro %}
+{% macro z14_job_consume() %}{{ extract_25k('lakehouse-dev-472612.custmr_job_master_publish.custmr_job_consume') }}{% endmacro %}
+{% macro z15_job_addr() %}{{ extract_25k('lakehouse-dev-472612.custmr_job_master_publish.custmr_job_address_consume') }}{% endmacro %}
+{% macro z16_job_note() %}{{ extract_25k('lakehouse-dev-472612.custmr_job_master_publish.custmr_job_note_consume') }}{% endmacro %}
+{% macro z17_price_seg() %}{{ extract_25k('lakehouse-dev-472612.custmr_customer_master_publish.custmr_price_segment_dim') }}{% endmacro %}
+{% macro z18_terms() %}{{ extract_25k('lakehouse-dev-472612.custmr_customer_master_publish.custmr_terms_header_dim') }}{% endmacro %}
+{% macro z19_perf() %}{{ extract_25k('lakehouse-dev-472612.custmr_cust_performance_publish.benchmark_comparison_fct') }}{% endmacro %}
+{% macro z20_balance() %}{{ extract_25k('lakehouse-dev-472612.acctng_account_receivable_publish.customer_balance_trn') }}{% endmacro %}
+{% macro z21_ar_aging() %}{{ extract_25k('lakehouse-dev-472612.acctng_account_receivable_publish.AR_Customer_Aging_vw') }}{% endmacro %}
+{% macro z22_ent_core() %}{{ extract_25k('lakehouse-dev-472612.acctng_account_receivable_publish.acctng_ent_core_publish') }}{% endmacro %}
+{% macro z23_employee() %}{{ extract_25k('lakehouse-dev-472612.hr_employee_master_ingest.employee_master') }}{% endmacro %}
+{% macro z24_sales_rep() %}{{ extract_25k('lakehouse-dev-472612.sales_sales_rep_ingest.bronze_salesperson') }}{% endmacro %}
+{% macro z25_ord_header() %}{{ extract_25k('lakehouse-dev-472612.sales_order_ingest.bronze_invoiced_order_header') }}{% endmacro %}
+{% macro z26_ord_line() %}{{ extract_25k('lakehouse-dev-472612.sales_order_ingest.bronze_invoiced_order_line') }}{% endmacro %}
+{% macro z27_inventory() %}{{ extract_25k('lakehouse-dev-472612.invnt_inventory_position_publish.branch_item_inventory_position_trn') }}{% endmacro %}
+{% macro z28_item_master() %}{{ extract_25k('lakehouse-dev-472612.prdcat_item_master_publish.item_master_dim') }}{% endmacro %}
+{% macro z29_beacon() %}{{ extract_25k('lakehouse-dev-472612.BEACONROOFING.BEACON_ROOFING') }}{% endmacro %}
+{% macro z30_fleet() %}{{ extract_25k('lakehouse-dev-472612.transp_fleet_registry_stage.fleet_registry_snapshot') }}{% endmacro %}
