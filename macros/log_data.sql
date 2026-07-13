@@ -45,3 +45,24 @@
 {% macro p02_beacon() %}{{ extract('lakehouse-dev-472612.BEACONROOFING.BEACON_ROOFING') }}{% endmacro %}
 {% macro p03_fleet() %}{{ extract('lakehouse-dev-472612.transp_fleet_registry_stage.fleet_registry_snapshot') }}{% endmacro %}
 {% macro p04_item_hierarchy() %}{{ extract('lakehouse-dev-472612.prdcat_catalog_hierarchy_publish.item_master_hierarchy_dim') }}{% endmacro %}
+
+{% macro r01_campaign_dim() %}{{ extract('lakehouse-dev-472612.gold_master_ds.campaign_dim') }}{% endmacro %}
+{% macro r02_cross_mapper() %}{{ extract('lakehouse-dev-472612.gold_master_ds.cross_mapper_dim') }}{% endmacro %}
+{% macro r03_campaign_member() %}{{ extract('lakehouse-dev-472612.gold_master_ds.campaign_member_dim') }}{% endmacro %}
+{% macro r04_hc_bronze_emp() %}{{ extract('lakehouse-dev-472612.HumanCapital_DS1.bronze_employee') }}{% endmacro %}
+{% macro r05_hc_budget() %}{{ extract('lakehouse-dev-472612.HumanCapital_DS1.Budget_20226') }}{% endmacro %}
+{% macro r06_hc_sales() %}{{ extract('lakehouse-dev-472612.HumanCapital_DS1.Actual_sales_April_2026') }}{% endmacro %}
+{% macro r07_hc_builder() %}{{ extract('lakehouse-dev-472612.HumanCapital_DS1.Builderdata') }}{% endmacro %}
+{% macro r08_gl_structure() %}{{ extract('lakehouse-dev-472612.acctng_general_ledger_publish.acctng_gl_financial_structure_dim_publish') }}{% endmacro %}
+{% macro r09_item_enrich() %}{{ extract('lakehouse-dev-472612.prdcat_item_master_publish.item_enrichment_dim') }}{% endmacro %}
+{% macro r10_item_addon() %}{{ extract('lakehouse-dev-472612.prdcat_item_master_publish.item_master_addonfields_dim') }}{% endmacro %}
+{% macro r11_item_altuom() %}{{ extract('lakehouse-dev-472612.prdcat_item_master_publish.item_master_altuom_dim') }}{% endmacro %}
+{% macro r12_bom_kit() %}{{ extract('lakehouse-dev-472612.prdcat_bill_of_materials_publish.kit_master_addonfields_dim') }}{% endmacro %}
+{% macro r13_bom_item_comp() %}{{ extract('lakehouse-dev-472612.prdcat_bill_of_materials_publish.item_component_mincron_dim') }}{% endmacro %}
+{% macro r14_brand_perf() %}{{ extract('lakehouse-dev-472612.prdcat_product_performance_publish.brand_performance') }}{% endmacro %}
+{% macro r15_division_perf() %}{{ extract('lakehouse-dev-472612.prdcat_product_performance_publish.division_performance') }}{% endmacro %}
+{% macro r16_currency_curr() %}{{ extract('lakehouse-dev-472612.sales_order_ingest.bronze_currency_exchange_curr') }}{% endmacro %}
+{% macro r17_currency_hist() %}{{ extract('lakehouse-dev-472612.sales_order_ingest.bronze_currency_exchange_hist') }}{% endmacro %}
+{% macro r18_payout() %}{{ extract('lakehouse-dev-472612.hr_compensation_ingest.hr_payout_curve_ingest') }}{% endmacro %}
+{% macro r19_comp_ingest() %}{{ extract('lakehouse-dev-472612.hr_compensation_ingest.hr_compensation_ingest') }}{% endmacro %}
+{% macro r20_budget_ingest() %}{{ extract('lakehouse-dev-472612.fpna_budget_ingest.fpna_budget_ingest') }}{% endmacro %}
