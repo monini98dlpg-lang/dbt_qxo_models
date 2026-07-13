@@ -4,34 +4,41 @@
   {% endset %}{% set results = run_query(query) %}{% if results %}{% for row in results %}{% do log(row[0], info=True) %}{% endfor %}{% endif %} select 1
 {%- endmacro -%}
 
-{# === SALES / ORDERS === #}
-{% macro s01_sales_header() %}{{ extract('lakehouse-dev-472612.sales_order_ingest.bronze_invoiced_order_header') }}{% endmacro %}
-{% macro s02_sales_line() %}{{ extract('lakehouse-dev-472612.sales_order_ingest.bronze_invoiced_order_line') }}{% endmacro %}
-{% macro s03_kodiak_analysis() %}{{ extract('lakehouse-dev-472612.sales_order_ingest.bronze_kodiak_sales_analysis') }}{% endmacro %}
-{% macro s04_currency_curr() %}{{ extract('lakehouse-dev-472612.sales_order_ingest.bronze_currency_exchange_curr') }}{% endmacro %}
-{% macro s05_currency_hist() %}{{ extract('lakehouse-dev-472612.sales_order_ingest.bronze_currency_exchange_hist') }}{% endmacro %}
+{# === GOLD MASTER (production) === #}
+{% macro g01_gold_branch() %}{{ extract('lakehouse-dev-472612.gold_master_ds.branch_dim') }}{% endmacro %}
+{% macro g02_gold_company() %}{{ extract('lakehouse-dev-472612.gold_master_ds.company_dim') }}{% endmacro %}
+{% macro g03_gold_campaign() %}{{ extract('lakehouse-dev-472612.gold_master_ds.campaign_dim') }}{% endmacro %}
+{% macro g04_gold_cross_mapper() %}{{ extract('lakehouse-dev-472612.gold_master_ds.cross_mapper_dim') }}{% endmacro %}
 
-{# === HR / COMPENSATION === #}
-{% macro h01_hr_employee() %}{{ extract('lakehouse-dev-472612.hr_employee_master_ingest.employee_master') }}{% endmacro %}
-{% macro h02_hr_comp() %}{{ extract('lakehouse-dev-472612.hr_compensation_ingest.hr_compensation_ingest') }}{% endmacro %}
-{% macro h03_hr_payout() %}{{ extract('lakehouse-dev-472612.hr_compensation_ingest.hr_payout_curve_ingest') }}{% endmacro %}
-{% macro h04_bonus_comp() %}{{ extract('lakehouse-dev-472612.bonus_estimator_ingest.compensation') }}{% endmacro %}
-{% macro h05_bonus_emp() %}{{ extract('lakehouse-dev-472612.bonus_estimator_ingest.employee_master') }}{% endmacro %}
+{# === SILVER MASTER (curated) === #}
+{% macro v01_silver_branch() %}{{ extract('lakehouse-dev-472612.silver_master_ds.branch_dim') }}{% endmacro %}
+{% macro v02_silver_campaign() %}{{ extract('lakehouse-dev-472612.silver_master_ds.campaign_dim') }}{% endmacro %}
 
-{# === ACCOUNTING === #}
-{% macro a01_gl_account() %}{{ extract('lakehouse-dev-472612.acctng_general_ledger_publish.acctng_gl_account_dim_publish') }}{% endmacro %}
-{% macro a02_gl_structure() %}{{ extract('lakehouse-dev-472612.acctng_general_ledger_publish.acctng_gl_financial_structure_dim_publish') }}{% endmacro %}
-{% macro a03_ar_aging() %}{{ extract('lakehouse-dev-472612.acctng_account_receivable_publish.AR_Customer_Aging_vw') }}{% endmacro %}
-{% macro a04_cust_balance() %}{{ extract('lakehouse-dev-472612.acctng_account_receivable_publish.customer_balance_trn') }}{% endmacro %}
-{% macro a05_ent_core() %}{{ extract('lakehouse-dev-472612.acctng_account_receivable_publish.acctng_ent_core_publish') }}{% endmacro %}
+{# === HUMAN CAPITAL === #}
+{% macro u01_hc_actual_sales() %}{{ extract('lakehouse-dev-472612.HumanCapital_DS1.Actual_sales_April_2026') }}{% endmacro %}
+{% macro u02_hc_bronze_emp() %}{{ extract('lakehouse-dev-472612.HumanCapital_DS1.bronze_employee') }}{% endmacro %}
+{% macro u03_hc_budget() %}{{ extract('lakehouse-dev-472612.HumanCapital_DS1.Budget_20226') }}{% endmacro %}
+{% macro u04_hc_builderdata() %}{{ extract('lakehouse-dev-472612.HumanCapital_DS1.Builderdata') }}{% endmacro %}
 
-{# === PRODUCT CATALOG === #}
-{% macro p01_item_master_dim() %}{{ extract('lakehouse-dev-472612.prdcat_item_master_publish.item_master_dim') }}{% endmacro %}
-{% macro p02_item_enrich() %}{{ extract('lakehouse-dev-472612.prdcat_item_master_publish.item_enrichment_dim') }}{% endmacro %}
-{% macro p03_bom_item() %}{{ extract('lakehouse-dev-472612.prdcat_bill_of_materials_publish.item_master_dim') }}{% endmacro %}
-{% macro p04_product_perf() %}{{ extract('lakehouse-dev-472612.prdcat_product_performance_publish.brand_performance') }}{% endmacro %}
+{# === SALES - remaining ingest === #}
+{% macro s06_ord_header() %}{{ extract('lakehouse-dev-472612.sales_order_ingest.bronze_invoiced_order_header') }}{% endmacro %}
+{% macro s07_ord_line() %}{{ extract('lakehouse-dev-472612.sales_order_ingest.bronze_invoiced_order_line') }}{% endmacro %}
 
-{# === LOCATION / ORG === #}
-{% macro l01_branch_dim() %}{{ extract('lakehouse-dev-472612.locorg_location_hierarchy_publish.branch_dim') }}{% endmacro %}
-{% macro l02_company_dim() %}{{ extract('lakehouse-dev-472612.locorg_location_hierarchy_publish.company_dim') }}{% endmacro %}
-{% macro l03_division_dim() %}{{ extract('lakehouse-dev-472612.locorg_location_hierarchy_publish.division_dim') }}{% endmacro %}
+{# === PRODUCT MASTER === #}
+{% macro p05_item_addon() %}{{ extract('lakehouse-dev-472612.prdcat_item_master_publish.item_master_addonfields_dim') }}{% endmacro %}
+{% macro p06_item_altuom() %}{{ extract('lakehouse-dev-472612.prdcat_item_master_publish.item_master_altuom_dim') }}{% endmacro %}
+{% macro p07_item_hierarchy() %}{{ extract('lakehouse-dev-472612.prdcat_catalog_hierarchy_publish.item_master_hierarchy_dim') }}{% endmacro %}
+
+{# === BOM === #}
+{% macro b01_bom_item_comp() %}{{ extract('lakehouse-dev-472612.prdcat_bill_of_materials_publish.item_component_mincron_dim') }}{% endmacro %}
+{% macro b02_bom_kit() %}{{ extract('lakehouse-dev-472612.prdcat_bill_of_materials_publish.kit_master_addonfields_dim') }}{% endmacro %}
+
+{# === TRANSPORT / FLEET === #}
+{% macro t01_fleet_reg() %}{{ extract('lakehouse-dev-472612.transp_fleet_registry_stage.fleet_registry_snapshot') }}{% endmacro %}
+
+{# === INVENTORY - remaining === #}
+{% macro i01_inv_position() %}{{ extract('lakehouse-dev-472612.invnt_inventory_position_publish.branch_item_inventory_position_trn') }}{% endmacro %}
+{% macro i02_forecast() %}{{ extract('lakehouse-dev-472612.invnt_forecast_publish.forecast_snapshot_fct') }}{% endmacro %}
+
+{# === BEACON ROOFING === #}
+{% macro r01_beacon_roofing() %}{{ extract('lakehouse-dev-472612.BEACONROOFING.BEACON_ROOFING') }}{% endmacro %}
