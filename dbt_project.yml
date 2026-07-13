@@ -1,0 +1,7 @@
+name: 'qxo_data_extract'
+version: '1.0.0'
+profile: 'default'
+
+models:
+  qxo_data_extract:
+    +materialized: ephemeral
