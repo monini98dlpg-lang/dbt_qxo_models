@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: hr_employee_master_ingest
+    database: lakehouse-dev-472612
+    schema: hr_employee_master_ingest
+    tables:
+      - name: employee_master
